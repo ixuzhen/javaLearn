@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+<!--    基于xml方式创建对象-->
+<!--    普通的创建对象-->
+    <bean id="user1" class="com.spring5.ioc.User"></bean>
+
+<!--    使用set方法，创建对象，并注入属性-->
+    <bean id="book1" class="com.spring5.ioc.Book">
+        <property name="bname" value="lalala"></property>
+        <property name="bprice" value="123"></property>
+    </bean>
+
+<!--    使用有参构造器，创建对象，并注入属性-->
+    <bean id="order1" class="com.spring5.ioc.Orders">
+        <constructor-arg name="oname" value="电脑"></constructor-arg>
+        <constructor-arg name="address" value="Chaimn"></constructor-arg>
+
+    </bean>
+</beans>

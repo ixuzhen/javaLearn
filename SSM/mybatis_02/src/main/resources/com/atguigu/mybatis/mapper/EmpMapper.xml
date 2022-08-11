@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.mybatis.mapper.EmpMapper">
+    <!--
+    <insert id="insertUser">
+        insert into t_user values(null,'admin','123456',23,'男','12345@qq.com')
+    </insert>
+    -->
+    <!--Emp getEmpByEmpId(Integer id);-->
+    <select id="getEmpByEmpId" resultType="Emp">
+        <!--将mysql的下划线命名格式，映射成java习惯的驼峰命名格式：
+            emp_id -> empId
+        -->
+        select * from t_emp where emp_id = #{id}
+    </select>
+
+
+    <resultMap id="EmpAndDeptResultMap_01" type="Emp">
+        <id column="emp_id" property="empId"></id>
+        <result column="emp_name" property="empName"></result>
+        <result column="age" property="age"></result>
+        <result column="gender" property="gender"></result>
+        <result column="dept_id" property="dept.deptId"></result>
+        <result column="dept_name" property="dept.deptName"/>
+    </resultMap>
+
+    <resultMap id="EmpAndDeptResultMap" type="Emp">
+        <id column="emp_id" property="empId"></id>
+        <result column="emp_name" property="empName"></result>
+        <result column="age" property="age"></result>
+        <result column="gender" property="gender"></result>
+        <association property="dept" javaType="Dept">
+            <id column="dept_id" property="deptId"/>
+            <result column="dept_name" property="deptName"/>
+        </association>
+    </resultMap>
+    <!--Emp getEmpAndDeptByEmpId(@Param("empId") Integer empId);-->
+    <select id="getEmpAndDeptByEmpId" resultMap="EmpAndDeptResultMap">
+        select *
+        from t_emp left join t_dept on t_emp.dept_id = t_dept.dept_id
+        where emp_id = #{empId}
+    </select>
+
+
+    <resultMap id="EmpAndDeptByEmpIdStepResultMap" type="emp">
+        <id column="emp_id" property="empId"></id>
+        <result column="emp_name" property="empName"></result>
+        <result column="age" property="age"></result>
+        <result column="gender" property="gender"></result>
+        <association property="dept"
+                     select="com.atguigu.mybatis.mapper.DeptMapper.getDeptByDeptId"
+                     column="dept_id"></association>
+    </resultMap>
+    <!--Emp getEmpAndDeptByEmpIdStep(@Param("empId") Integer empId);-->
+    <select id="getEmpAndDeptByEmpIdStep" resultMap="EmpAndDeptByEmpIdStepResultMap">
+        select * from t_emp where emp_id = #{empId}
+    </select>
+
+    <!--List<Emp> getEmpsByDeptId(@Param("deptId") Integer deptId);-->
+    <select id="getEmpsByDeptId" resultType="emp">
+        select * from t_emp where dept_id = #{deptId}
+    </select>
+
+    <!--List<Emp> getEmpsByIf(@Param("emp") Emp emp);-->
+    <select id="getEmpsByIf" resultType="Emp">
+        select * from t_emp
+        <where>
+            <if test="empName != null and empName != ''">
+                emp_name = #{empName}
+            </if>
+            <if test="age != null and age != ''">
+                and age = #{age}
+            </if>
+        </where>
+    </select>
+
+
+    <!--void insertEmps(@Param("emps") List<Emp> emps);-->
+    <insert id="insertEmps">
+        insert into t_emp values
+          <foreach collection="emps" item="emp" separator=",">
+            (null,#{emp.empName},#{emp.age},#{emp.gender},null)
+          </foreach>
+    </insert>
+
+    <!--void deleteEmps(@Param("empIds”）-->
+    <delete id="deleteEmps" >
+        delete from t_emp where emp_id in
+        <foreach collection="empIds" separator="," open="(" close=")" item="empId">
+            #{empId}
+        </foreach>
+    </delete>
+
+</mapper>
